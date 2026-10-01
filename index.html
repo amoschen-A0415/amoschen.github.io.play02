@@ -35,6 +35,16 @@
                             main: '#ff85a2',
                             dark: '#ff4d6d'
                         }
+                    },
+                    keyframes: {
+                        pop: {
+                            '0%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.2)' },
+                            '100%': { transform: 'scale(1)' },
+                        }
+                    },
+                    animation: {
+                        pop: 'pop 0.4s ease-in-out',
                     }
                 }
             }
@@ -90,7 +100,7 @@
         <div id="view-lobby" class="w-full max-w-[96vw] h-full max-h-[90vh] bg-white/80 border-2 border-pink-200 rounded-3xl p-4 md:p-6 shadow-xl backdrop-blur-xl relative flex flex-col justify-between overflow-hidden">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center h-full">
                 
-                <!-- 左側：QR Code (還原 480x480 固定尺寸) -->
+                <!-- 左側：QR Code -->
                 <div class="md:col-span-6 lg:col-span-7 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-rose-200 pr-0 md:pr-6 pb-2 md:pb-0 text-center h-full overflow-hidden">
                     <div class="p-4 bg-gradient-to-br from-pink-200 via-rose-200 to-pink-300 rounded-3xl shadow-[0_0_40px_rgba(255,182,193,0.6)] my-auto flex-shrink-0" style="width: 512px; height: 512px;">
                         <div id="qrcode" class="bg-white p-2 rounded-2xl border-2 border-white flex items-center justify-center shadow-inner" style="width: 480px; height: 480px;"></div>
@@ -155,7 +165,7 @@
             </div>
         </div>
 
-        <!-- 手機端 - 參賽者控制器 (色系改為淡淡少女粉) -->
+        <!-- 手機端 - 參賽者控制器 -->
         <div id="view-player-mobile" class="hidden fixed inset-0 z-50 bg-rose-50 p-4 flex-col justify-between overflow-hidden">
             <div id="mobile-top-bar" class="text-center space-y-1 flex-shrink-0">
                 <span class="text-3xl">🍞</span>
@@ -171,7 +181,7 @@
                 </button>
             </div>
 
-            <!-- 手機端：顯示資訊區塊 (作答前隱藏秒數) -->
+            <!-- 手機端：顯示資訊區塊 -->
             <div id="mobile-game-panel" class="hidden flex-col space-y-4 my-auto bg-white/90 border-2 border-pink-300 p-6 rounded-3xl shadow-xl text-center">
                 <div class="flex justify-between items-center border-b border-pink-200 pb-3">
                     <span class="text-rose-700 font-extrabold text-lg">參賽者：<span id="m-disp-name" class="text-rose-900">--</span></span>
@@ -213,7 +223,7 @@
             </div>
         </div>
 
-        <!-- 大螢幕 - 回合宣告 / 秒數提示 / 數數 Splash -->
+        <!-- 大螢幕 - 回合宣告 / 秒數提示 Splash -->
         <div id="view-splash" class="hidden fixed inset-0 z-40 bg-rose-50/95 backdrop-blur-md flex flex-col items-center justify-center animate-fade-in">
             <span id="splash-subtext" class="text-2xl text-rose-400 font-bold tracking-widest mb-2">ROUND ANNOUNCEMENT</span>
             <h1 id="splash-maintext" class="text-6xl md:text-8xl font-black text-rose-600">
@@ -224,7 +234,7 @@
         <!-- 大螢幕 - 遊戲主畫面 -->
         <div id="view-game" class="hidden w-full h-full max-h-[96vh] grid grid-cols-1 md:grid-cols-12 gap-4 overflow-hidden relative">
             
-            <!-- 右上角：數數倒數顯示 (1, 2, 3) -> 字體放大1倍 -->
+            <!-- 右上角：數數倒數顯示 (1, 2, 3) -->
             <div id="top-right-countdown" class="hidden absolute top-4 right-8 z-30 bg-white/90 border-2 border-pink-300 px-8 py-4 rounded-3xl shadow-lg flex items-center gap-4">
                 <span class="text-rose-500 font-black text-2xl">提示計時：</span>
                 <span id="countdown-num-text" class="text-8xl md:text-9xl font-black text-rose-600 tracking-wider">1</span>
@@ -244,18 +254,19 @@
                 </div>
             </div>
 
-            <!-- 右側：中央題目與默數展示區 -->
+            <!-- 右側：中央題目與默數展示區 (秒數字體加大 1 倍) -->
             <div class="md:col-span-7 lg:col-span-8 bg-white/90 border-2 border-pink-200 rounded-3xl p-6 md:p-8 shadow-lg backdrop-blur-xl flex flex-col items-center justify-center text-center overflow-hidden h-full relative">
                 <div id="game-round-title" class="text-2xl md:text-3xl font-black text-rose-600 tracking-wider mb-4">
                     第 1 回合
                 </div>
                 
-                <div class="p-8 bg-rose-50/80 border-2 border-pink-200 rounded-3xl w-full max-w-xl shadow-inner">
-                    <div class="text-rose-500 text-xl md:text-2xl font-bold mb-2">🎯 本回合題目秒數</div>
-                    <div id="big-target-seconds" class="text-7xl md:text-9xl font-black text-rose-600 drop-shadow-sm my-2">
+                <div class="p-8 md:p-12 bg-rose-50/80 border-2 border-pink-200 rounded-3xl w-full max-w-2xl shadow-inner flex flex-col items-center justify-center">
+                    <div class="text-rose-500 text-2xl md:text-3xl font-bold mb-2">🎯 本回合題目秒數</div>
+                    <!-- 字體由 text-7xl md:text-9xl 加大 1 倍至 text-9xl md:text-[14rem] -->
+                    <div id="big-target-seconds" class="text-9xl md:text-[14rem] font-black text-rose-600 drop-shadow-md my-4 leading-none transition-all">
                         -- 秒
                     </div>
-                    <p class="text-rose-400 text-base md:text-lg font-bold mt-2">請在心中默數，到達目標秒數時快速搖晃手機！</p>
+                    <p class="text-rose-400 text-lg md:text-xl font-bold mt-2">請在心中默數，到達目標秒數時快速搖晃手機！</p>
                 </div>
             </div>
         </div>
@@ -269,7 +280,6 @@
                 </h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 flex-grow overflow-hidden my-2">
-                    
                     <!-- 左側排名 -->
                     <div class="md:col-span-3 bg-rose-50 rounded-2xl p-4 border border-pink-200 flex flex-col justify-between overflow-hidden">
                         <div class="flex justify-between items-center mb-3 border-b border-pink-200 pb-2 flex-shrink-0">
@@ -303,47 +313,27 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
 
             </div>
         </div>
 
-        <!-- 大螢幕 - 最終歷史記錄結算畫面 -->
-        <div id="view-final-result" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-rose-950/40 backdrop-blur-md p-6">
-            <div class="w-full max-w-7xl h-full max-h-[90vh] bg-white border-2 border-pink-300 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-2xl overflow-hidden relative">
+        <!-- 頒獎模式：全螢幕等分顯示各回合前三名 -->
+        <div id="view-final-result" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-rose-950/60 backdrop-blur-md p-6">
+            <div class="w-full max-w-[96vw] h-full max-h-[92vh] bg-white/95 border-4 border-pink-300 rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-2xl overflow-hidden relative">
                 
-                <h2 class="text-3xl md:text-5xl font-black text-center text-rose-600 mb-2 flex-shrink-0">
-                    🏆 最終歷史總排行榜 🏆
+                <h2 class="text-4xl md:text-6xl font-black text-center text-rose-600 mb-4 flex-shrink-0 drop-shadow-sm">
+                    🏆 榮譽頒獎典禮 - 各回合前三名 🏆
                 </h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 flex-grow overflow-hidden my-2">
-                    
-                    <div class="md:col-span-3 bg-rose-50 rounded-2xl p-4 border border-pink-200 flex flex-col justify-between overflow-hidden">
-                        <div class="flex justify-between items-center mb-3 border-b border-pink-200 pb-2 flex-shrink-0">
-                            <span class="font-black text-xl md:text-2xl text-rose-700">全場總排名 (左)</span>
-                            <span id="final-left-count" class="text-xs bg-rose-100 text-rose-600 px-2.5 py-1 rounded-full font-bold">0 人</span>
-                        </div>
-                        <div id="final-left-list" class="space-y-2 overflow-hidden pr-1 flex-grow"></div>
-                    </div>
-
-                    <div class="md:col-span-6 bg-pink-50/50 border-2 border-pink-200 rounded-2xl p-6 flex flex-col items-center justify-center text-center overflow-hidden shadow-inner">
-                        <div class="w-full flex flex-col items-center">
-                            <span class="text-rose-400 font-black tracking-widest text-sm mb-3">FINAL TOP 3 WINNERS</span>
-                            <div id="final-top3-container" class="w-full flex flex-col items-center space-y-4 my-auto"></div>
-                        </div>
-                    </div>
-
-                    <div class="md:col-span-3 bg-rose-50 rounded-2xl p-4 border border-pink-200 flex flex-col justify-between overflow-hidden">
-                        <div class="flex justify-between items-center mb-3 border-b border-pink-200 pb-2 flex-shrink-0">
-                            <span class="font-black text-xl md:text-2xl text-rose-700">全場總排名 (右)</span>
-                            <span id="final-right-count" class="text-xs bg-rose-100 text-rose-600 px-2.5 py-1 rounded-full font-bold">0 人</span>
-                        </div>
-                        <div id="final-right-list" class="space-y-2 overflow-hidden pr-1 flex-grow"></div>
-                    </div>
-
+                <!-- 滿版等分網格顯示各回合前 3 名 -->
+                <div id="rounds-awards-grid" class="grid gap-6 flex-grow overflow-y-auto my-2 p-2 w-full items-center">
+                    <!-- 動態生成各回合面板 -->
                 </div>
 
+                <div class="text-center pt-2 flex-shrink-0">
+                    <p class="text-rose-400 font-bold text-lg">🎉 恭喜以上所有獲勝者！感謝大家熱情參與！ 🎉</p>
+                </div>
             </div>
         </div>
 
@@ -366,10 +356,13 @@
         let currentRound = 1;
         let targetSeconds = 0;
         let roundStartTime = 0;
-        let roundTimerInterval = null;
         let isRoundActive = false;
 
         let audioCtx = null;
+        let heartbeatInterval = null;
+
+        // 各回合紀錄 (用於最後頒獎模式顯示每回合前三名)
+        let roundHistoryResults = []; // [{ round: 1, target: 10, top3: [...] }]
 
         // 搖晃檢測參數
         let lastShakeTime = 0;
@@ -391,6 +384,7 @@
             }
         };
 
+        // Web Audio API 初始化
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -400,7 +394,8 @@
             }
         }
 
-        function playSingleNote(freq, duration, type = 'square', gainValue = 0.1) {
+        // 音樂音效播放工具
+        function playSingleNote(freq, duration, type = 'sine', gainValue = 0.1) {
             if (!audioCtx || freq <= 0) return;
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -414,6 +409,82 @@
             osc.stop(audioCtx.currentTime + duration);
         }
 
+        // 模擬心跳聲音 (lub-dub 雙拍)
+        function playHeartbeatSound() {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+
+            // 第一聲 Lub (較低沉)
+            const osc1 = audioCtx.createOscillator();
+            const gain1 = audioCtx.createGain();
+            osc1.type = 'sine';
+            osc1.frequency.setValueAtTime(60, now);
+            osc1.frequency.exponentialRampToValueAtTime(30, now + 0.12);
+            gain1.gain.setValueAtTime(0.4, now);
+            gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+            osc1.connect(gain1);
+            gain1.connect(audioCtx.destination);
+            osc1.start(now);
+            osc1.stop(now + 0.12);
+
+            // 第二聲 Dub (間隔 0.15 秒，稍微短促)
+            const osc2 = audioCtx.createOscillator();
+            const gain2 = audioCtx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(50, now + 0.15);
+            osc2.frequency.exponentialRampToValueAtTime(25, now + 0.25);
+            gain2.gain.setValueAtTime(0.3, now + 0.15);
+            gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+            osc2.connect(gain2);
+            gain2.connect(audioCtx.destination);
+            osc2.start(now + 0.15);
+            osc2.stop(now + 0.25);
+        }
+
+        // 開始全場心跳背景音
+        function startHeartbeatLoop() {
+            stopHeartbeatLoop();
+            playHeartbeatSound();
+            heartbeatInterval = setInterval(() => {
+                playHeartbeatSound();
+            }, 850); // 每 0.85 秒一次心跳
+        }
+
+        function stopHeartbeatLoop() {
+            if (heartbeatInterval) {
+                clearInterval(heartbeatInterval);
+                heartbeatInterval = null;
+            }
+        }
+
+        // 作答跳出彈跳音效
+        function playSubmitPopSound() {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(800, now + 0.15);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+        }
+
+        // 煙花音效
+        function playFireworksSound() {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    playSingleNote(400 + Math.random() * 600, 0.3, 'sine', 0.2);
+                }, i * 300);
+            }
+        }
+
         function initHostPeer() {
             peer = new Peer();
             
@@ -421,7 +492,6 @@
                 const joinUrl = `${window.location.href.split('?')[0]}?host=${id}`;
                 document.getElementById("qrcode").innerHTML = "";
                 
-                // 還原固定尺寸 480x480
                 new QRCode(document.getElementById("qrcode"), {
                     text: joinUrl,
                     width: 480,
@@ -460,7 +530,8 @@
                 isFailed: false,
                 diffSeconds: null,
                 streak: 0,
-                historyScores: []
+                historyScores: [],
+                justSubmitted: false // 用於大螢幕躍動觸發標記
             };
             players.push(p);
             renderLobbyPlayers();
@@ -515,7 +586,8 @@
                     isFailed: false,
                     diffSeconds: null,
                     streak: 0,
-                    historyScores: []
+                    historyScores: [],
+                    justSubmitted: false
                 });
             }
 
@@ -533,6 +605,10 @@
             });
 
             currentRound = 1;
+            roundHistoryResults = [];
+            
+            // 整場比賽啟動心跳背景聲
+            startHeartbeatLoop();
             startRoundFlow();
         }
 
@@ -542,6 +618,7 @@
                 p.currentSubmittedTime = null;
                 p.isFailed = false;
                 p.diffSeconds = null;
+                p.justSubmitted = false;
             });
 
             isRoundActive = false;
@@ -627,6 +704,7 @@
             const p = players.find(x => x.id === playerId);
             if (p && p.currentSubmittedTime === null) {
                 p.currentSubmittedTime = parseFloat(submittedTime.toFixed(2));
+                p.justSubmitted = true; // 觸發躍動動畫
                 
                 if (p.currentSubmittedTime > targetSeconds) {
                     p.isFailed = true;
@@ -636,14 +714,20 @@
                     p.diffSeconds = parseFloat((targetSeconds - p.currentSubmittedTime).toFixed(2));
                 }
 
+                // 參賽者作答音效與躍動繪製
+                playSubmitPopSound();
                 renderPlayersDashboard();
+                
+                setTimeout(() => {
+                    p.justSubmitted = false;
+                }, 400);
+
                 checkAllSubmitted();
             }
         }
 
         function triggerAISubmit() {
             players.filter(p => p.isAI).forEach(ai => {
-                // AI 在 (targetSeconds - 2) ~ (targetSeconds + 1) 間隨機回傳
                 const offset = (Math.random() * 3) - 2; 
                 let aiSimulatedTime = Math.max(1, targetSeconds + offset);
                 aiSimulatedTime = parseFloat(aiSimulatedTime.toFixed(2));
@@ -673,7 +757,6 @@
 
             document.getElementById('game-total-players-badge').innerText = `${players.length} 人`;
 
-            // 排序規則：最接近題目者為第一名（超過者為失敗排序最後），同秒數依連勝數高排序
             const sortedPlayers = [...players].sort((a, b) => {
                 if (a.isFailed && !b.isFailed) return 1;
                 if (!a.isFailed && b.isFailed) return -1;
@@ -701,10 +784,13 @@
                     }
                 }
 
+                // 若剛提交秒數，加入大螢幕躍動放大效果 (animate-pop)
+                const popAnimClass = p.justSubmitted ? 'animate-pop scale-105 transition-all' : '';
+
                 const streakText = p.streak > 0 ? ` 🔥${p.streak}連勝` : '';
                 const displayName = p.displayName || p.name;
 
-                card.className = `p-2.5 rounded-xl border-2 ${borderClass} flex items-center justify-between transition-all duration-200 flex-shrink-0`;
+                card.className = `p-2.5 rounded-xl border-2 ${borderClass} ${popAnimClass} flex items-center justify-between transition-all duration-200 flex-shrink-0`;
                 card.innerHTML = `
                     <div class="flex items-center gap-2.5 truncate max-w-[65%]">
                         <span class="font-black text-rose-500 text-lg min-w-[28px] text-center">#${rank + 1}</span>
@@ -748,6 +834,26 @@
                 return 0;
             });
 
+            // 儲存此回合前三名資料供頒獎模式等分顯示
+            const top3List = sorted.slice(0, 3).map(p => ({
+                name: p.displayName || p.name,
+                time: p.isFailed ? '失敗' : `${p.currentSubmittedTime.toFixed(2)} 秒`,
+                diff: p.isFailed ? '--' : `差 ${p.diffSeconds.toFixed(2)}s`
+            }));
+
+            roundHistoryResults.push({
+                round: currentRound,
+                targetSeconds: targetSeconds,
+                top3: top3List
+            });
+
+            // 若為最後一回合，直接進入頒獎模式！
+            if (currentRound >= totalRounds) {
+                showAwardsCeremony();
+                return;
+            }
+
+            // 中間回合顯示該回合結算榜
             document.getElementById('round-result-title').innerText = `🏆 第 ${currentRound} 回合 結算榜 🏆`;
 
             const halfIndex = Math.ceil(sorted.length / 2);
@@ -762,9 +868,8 @@
 
             const top3Container = document.getElementById('round-top3-container');
             top3Container.innerHTML = '';
-            const top3 = sorted.slice(0, 3);
 
-            top3.forEach((p, idx) => {
+            sorted.slice(0, 3).forEach((p, idx) => {
                 const card = document.createElement('div');
                 const timeText = p.isFailed ? '失敗' : `${p.currentSubmittedTime.toFixed(2)} 秒 (差 ${p.diffSeconds.toFixed(2)}s)`;
                 
@@ -774,7 +879,7 @@
                         <span class="text-3xl">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}</span>
                         <div class="text-left">
                             <span class="text-xs font-bold text-rose-400">第 ${idx + 1} 名</span>
-                            <div class="text-xl font-black text-rose-800">${p.name}</div>
+                            <div class="text-xl font-black text-rose-800">${p.displayName || p.name}</div>
                         </div>
                     </div>
                     <div class="text-right">
@@ -800,7 +905,7 @@
                 item.innerHTML = `
                     <div class="flex items-center gap-1.5 truncate">
                         <span class="font-bold text-pink-400 w-5 flex-shrink-0">#${rankNum}</span>
-                        <span class="font-bold text-rose-800 truncate">${p.name}</span>
+                        <span class="font-bold text-rose-800 truncate">${p.displayName || p.name}</span>
                     </div>
                     <div class="text-right flex-shrink-0 font-black text-rose-600">
                         ${displaySec}
@@ -813,68 +918,104 @@
         document.getElementById('btn-next-round').addEventListener('click', () => {
             document.getElementById('view-round-result').classList.add('hidden');
             currentRound++;
-            if (currentRound > totalRounds) {
-                showFinalResult();
-            } else {
-                startRoundFlow();
-            }
+            startRoundFlow();
         });
 
-        function showFinalResult() {
+        // 直接進入頒獎模式（全螢幕煙花與音效連放8秒、每回合前三名等分顯示）
+        function showAwardsCeremony() {
+            stopHeartbeatLoop(); // 停止心跳聲
+
             document.getElementById('view-game').classList.add('hidden');
+            document.getElementById('view-round-result').classList.add('hidden');
             document.getElementById('view-final-result').classList.remove('hidden');
 
-            const finalSorted = [...players].sort((a, b) => {
-                const avgA = a.historyScores.reduce((s, x) => s + x, 0) / a.historyScores.length;
-                const avgB = b.historyScores.reduce((s, x) => s + x, 0) / b.historyScores.length;
-                return avgA - avgB;
-            });
-
+            // 通知手機端比賽結束
             players.forEach(p => {
                 if (p.conn) {
-                    const rank = finalSorted.findIndex(s => s.id === p.id) + 1;
                     p.conn.send({
                         type: 'FINAL_RESULT',
-                        rank: rank,
-                        totalPlayers: finalSorted.length
+                        rank: 1,
+                        totalPlayers: players.length
                     });
                 }
             });
 
-            const halfIndex = Math.ceil(finalSorted.length / 2);
-            const leftPlayers = finalSorted.slice(0, halfIndex);
-            const rightPlayers = finalSorted.slice(halfIndex);
+            // 渲染全螢幕等分顯示網格
+            const awardsGrid = document.getElementById('rounds-awards-grid');
+            awardsGrid.innerHTML = '';
 
-            document.getElementById('final-left-count').innerText = `${leftPlayers.length} 人`;
-            document.getElementById('final-right-count').innerText = `${rightPlayers.length} 人`;
+            // 依據回合數自動計算 Grid 欄位數 (等分大螢幕)
+            const roundCount = roundHistoryResults.length;
+            if (roundCount === 1) {
+                awardsGrid.className = "grid grid-cols-1 gap-6 flex-grow overflow-y-auto my-2 p-2 w-full items-center max-w-2xl mx-auto";
+            } else if (roundCount === 2) {
+                awardsGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-6 flex-grow overflow-y-auto my-2 p-2 w-full items-center";
+            } else if (roundCount === 3) {
+                awardsGrid.className = "grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow overflow-y-auto my-2 p-2 w-full items-center";
+            } else {
+                awardsGrid.className = `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-${Math.min(roundCount, 5)} gap-4 flex-grow overflow-y-auto my-2 p-2 w-full items-center`;
+            }
 
-            renderParticipantList('final-left-list', leftPlayers, 1);
-            renderParticipantList('final-right-list', rightPlayers, halfIndex + 1);
-
-            const top3Container = document.getElementById('final-top3-container');
-            top3Container.innerHTML = '';
-            const top3 = finalSorted.slice(0, 3);
-
-            top3.forEach((p, idx) => {
-                const card = document.createElement('div');
-                card.className = `w-full max-w-md p-4 rounded-2xl border-2 border-pink-300 bg-white shadow flex justify-between items-center px-6`;
-                card.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <span class="text-4xl">${idx === 0 ? '🥇' : idx === 1 ? '🥈' : '🥉'}</span>
-                        <div class="text-left">
-                            <span class="text-xs font-bold text-rose-400">總排名 第 ${idx + 1} 名</span>
-                            <div class="text-2xl font-black text-rose-800">${p.name}</div>
+            roundHistoryResults.forEach((rh) => {
+                const roundCard = document.createElement('div');
+                roundCard.className = "bg-rose-50/80 border-2 border-pink-300 rounded-3xl p-5 shadow-lg flex flex-col h-full justify-between items-center text-center backdrop-blur-sm";
+                
+                let top3Html = '';
+                rh.top3.forEach((t, i) => {
+                    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
+                    const bgHighlight = i === 0 ? 'bg-amber-100/80 border-amber-300' : 'bg-white border-pink-200';
+                    top3Html += `
+                        <div class="w-full flex items-center justify-between p-3 rounded-2xl border ${bgHighlight} shadow-sm my-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">${medal}</span>
+                                <span class="font-black text-rose-800 text-lg truncate max-w-[120px]">${t.name}</span>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-black text-rose-600 text-sm">${t.time}</div>
+                                <div class="text-[10px] text-rose-400 font-bold">${t.diff}</div>
+                            </div>
                         </div>
+                    `;
+                });
+
+                roundCard.innerHTML = `
+                    <div class="w-full border-b border-pink-200 pb-3 mb-2 flex-shrink-0">
+                        <span class="text-xs bg-pink-200 text-rose-700 px-3 py-1 rounded-full font-extrabold border border-pink-300">ROUND ${rh.round}</span>
+                        <h3 class="text-2xl font-black text-rose-700 mt-2">第 ${rh.round} 回合</h3>
+                        <p class="text-rose-500 font-bold text-sm">題目：${rh.targetSeconds} 秒</p>
                     </div>
-                    <div class="text-right">
-                        <div class="text-lg font-black text-rose-600">最高連勝: ${p.streak}</div>
+                    <div class="w-full flex-grow flex flex-col justify-center space-y-2">
+                        ${top3Html}
                     </div>
                 `;
-                top3Container.appendChild(card);
+                awardsGrid.appendChild(roundCard);
             });
 
-            // 慶祝彩帶效果
-            confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+            // 💥 全螢幕煙花連放 8 秒與聲效 💥
+            const endTime = Date.now() + 8000;
+            playFireworksSound();
+
+            const fireworksInterval = setInterval(() => {
+                if (Date.now() > endTime) {
+                    clearInterval(fireworksInterval);
+                    return;
+                }
+                
+                // 隨機角度與位置爆發彩帶煙花
+                confetti({
+                    particleCount: 50,
+                    startVelocity: 30,
+                    spread: 360,
+                    origin: {
+                        x: Math.random(),
+                        y: Math.random() * 0.6 + 0.1
+                    }
+                });
+
+                if (Math.random() > 0.5) {
+                    playFireworksSound();
+                }
+            }, 400);
         }
 
         // ================= 手機端控制器邏輯 =================
@@ -913,7 +1054,6 @@
 
             document.getElementById('m-disp-round').innerText = `第 ${roundNum} 回合`;
             document.getElementById('m-disp-target').innerText = `${targetSec} 秒`;
-            // 手機端作答前不顯示跑動秒數
             document.getElementById('m-disp-current').innerText = "-- 秒";
             document.getElementById('mobile-status-text').innerText = "⏱️ 請在心裡默數，達到秒數時搖晃手機傳送！";
 
@@ -925,7 +1065,6 @@
             hasSubmittedMobile = true;
 
             const finalSubmitted = (Date.now() - mobileRoundStartTime) / 1000;
-            // 作答後顯示個人的成績
             document.getElementById('m-disp-current').innerText = `${finalSubmitted.toFixed(2)} 秒`;
             document.getElementById('mobile-status-text').innerText = "✓ 秒數已成功傳送至大螢幕！";
 
@@ -990,8 +1129,8 @@
             resultBox.classList.remove('hidden');
             resultBox.classList.add('flex');
 
-            document.getElementById('mobile-result-rank').innerText = `第 ${rank} 名`;
-            document.getElementById('mobile-result-total').innerText = `共 ${totalPlayers} 人`;
+            document.getElementById('mobile-result-rank').innerText = `挑戰完成！`;
+            document.getElementById('mobile-result-total').innerText = `請看大螢幕精彩頒獎`;
         }
     </script>
 </body>
