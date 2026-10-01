@@ -360,6 +360,8 @@
 
         let audioCtx = null;
         let heartbeatInterval = null;
+        let currentBgmType = null;
+        let bgmTimeoutId = null;
 
         // 各回合紀錄 (用於最後頒獎模式顯示每回合前三名)
         let roundHistoryResults = []; // [{ round: 1, target: 10, top3: [...] }]
@@ -407,6 +409,47 @@
             gain.connect(audioCtx.destination);
             osc.start();
             osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playMarioVictoryFanfare() {
+            initAudio();
+            stopBgm();
+            currentBgmType = 'victory';
+
+            const N = {
+                G3: 196.00, C4: 261.63, E4: 329.63, G4: 392.00,
+                C5: 523.25, E5: 659.25, G5: 783.99, A5: 880.00, B5: 987.77,
+                A5b: 830.61, B5b: 932.33
+            };
+
+            const fanfare = [
+                { f: N.G3, d: 0.2 }, { f: N.C4, d: 0.2 }, { f: N.E4, d: 0.2 },
+                { f: N.G4, d: 0.2 }, { f: N.C5, d: 0.2 }, { f: N.E5, d: 0.2 },
+                { f: N.G5, d: 0.6 }, { f: N.E5, d: 0.6 },
+                
+                { f: N.A5b, d: 0.25 }, { f: N.C5, d: 0.25 }, { f: N.E5, d: 0.25 }, { f: N.A5b, d: 0.6 },
+                { f: N.B5b, d: 0.25 }, { f: N.D5 || 587.33, d: 0.25 }, { f: N.F5 || 698.46, d: 0.25 }, { f: N.B5b, d: 0.6 },
+                
+                { f: N.C5, d: 0.25 }, { f: N.E5, d: 0.25 }, { f: N.G5, d: 0.25 }, { f: N.C6 || 1046.50, d: 2.5 }
+            ];
+
+            let i = 0;
+            function playNext() {
+                if (i >= fanfare.length || currentBgmType !== 'victory') return;
+                const note = fanfare[i];
+                playSingleNote(note.f, note.d, 'square', 0.22);
+                i++;
+                bgmTimeoutId = setTimeout(playNext, note.d * 1000);
+            }
+            playNext();
+        }
+
+        function stopBgm() {
+            currentBgmType = null;
+            if (bgmTimeoutId) {
+                clearTimeout(bgmTimeoutId);
+                bgmTimeoutId = null;
+            }
         }
 
         // 模擬心跳聲音 (lub-dub 雙拍)
@@ -472,17 +515,6 @@
             gain.connect(audioCtx.destination);
             osc.start(now);
             osc.stop(now + 0.15);
-        }
-
-        // 煙花音效
-        function playFireworksSound() {
-            if (!audioCtx) return;
-            const now = audioCtx.currentTime;
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    playSingleNote(400 + Math.random() * 600, 0.3, 'sine', 0.2);
-                }, i * 300);
-            }
         }
 
         function initHostPeer() {
@@ -991,31 +1023,41 @@
                 awardsGrid.appendChild(roundCard);
             });
 
-            // 💥 全螢幕煙花連放 8 秒與聲效 💥
-            const endTime = Date.now() + 8000;
-            playFireworksSound();
+            // 💥 全螢幕煙花與瑪莉歐勝利音樂 💥
+            playMarioVictoryFanfare();
 
-            const fireworksInterval = setInterval(() => {
-                if (Date.now() > endTime) {
-                    clearInterval(fireworksInterval);
-                    return;
+            // 煙花特效（持續發射禮花與彩帶）
+            const duration = 8 * 1000;
+            const animationEnd = Date.now() + duration;
+
+            const interval = setInterval(function() {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
                 }
-                
-                // 隨機角度與位置爆發彩帶煙花
+
+                const particleCount = 50 * (timeLeft / duration);
+
                 confetti({
-                    particleCount: 50,
-                    startVelocity: 30,
+                    particleCount: particleCount,
                     spread: 360,
-                    origin: {
-                        x: Math.random(),
-                        y: Math.random() * 0.6 + 0.1
-                    }
+                    startVelocity: 30,
+                    origin: { x: Math.random(), y: Math.random() * 0.6 + 0.1 }
                 });
-
-                if (Math.random() > 0.5) {
-                    playFireworksSound();
-                }
-            }, 400);
+                confetti({
+                    particleCount: particleCount,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0, y: 0.7 }
+                });
+                confetti({
+                    particleCount: particleCount,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1, y: 0.7 }
+                });
+            }, 250);
         }
 
         // ================= 手機端控制器邏輯 =================
