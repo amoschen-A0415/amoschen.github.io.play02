@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>安得烈食物銀行 - 即時志工打包大挑戰</title>
+    <title>安得烈食物銀行裝箱大挑戰</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- PeerJS & QRCode.js -->
@@ -70,7 +70,7 @@
             animation: box-bounce 2.5s ease-in-out infinite;
         }
 
-        /* 答對 +1 跳躍動畫 (限制於範圍內向上跳躍並淡出) */
+        /* 答對 +1 跳躍動畫 */
         @keyframes correct-jump {
             0% { transform: translateY(10px) scale(0.7); opacity: 0; }
             40% { transform: translateY(-15px) scale(1.1); opacity: 1; }
@@ -95,7 +95,7 @@
         <div class="flex items-center space-x-3">
             <span class="text-3xl">🍞</span>
             <h1 class="text-2xl md:text-3xl font-black text-amber-900 tracking-wide flex items-center gap-2">
-                安得烈食物銀行 <span class="bg-amber-100 text-amber-800 text-base px-3 py-1 rounded-full border border-amber-300">志工打包大挑戰</span>
+                安得烈食物銀行裝箱大挑戰
             </h1>
         </div>
     </header>
@@ -123,40 +123,64 @@
                         </h2>
 
                         <div id="player-list-lobby" class="grid grid-cols-2 lg:grid-cols-3 gap-2.5 overflow-hidden flex-grow content-start">
-                            <div class="col-span-full text-amber-700/60 text-center py-12 font-bold border-2 border-dashed border-amber-200 rounded-2xl text-lg">
-                                ☀ 請掃描左側 QR Code 加入志工隊伍...
+                            <div class="col-span-full text-amber-700/60 text-center py-6 font-bold border-2 border-dashed border-amber-200 rounded-2xl text-lg flex flex-col items-center justify-center gap-2">
+                                <div>☀ 請掃描左側 QR Code 加入志工隊伍...</div>
+                            </div>
+                        </div>
+
+                        <!-- 規則說明：無人加入時顯示，人員加入後隱藏 -->
+                        <div id="rules-guide-box" class="mt-3 p-4 bg-amber-100/80 border-2 border-amber-300 rounded-2xl text-amber-900 text-sm font-bold flex flex-col gap-2 shadow-sm">
+                            <div class="font-black text-base text-amber-950 flex items-center gap-2 border-b border-amber-300/80 pb-1">
+                                📋 遊戲核心規則說明
+                            </div>
+                            <div>
+                                📌 <span class="font-black text-amber-950">分數計算規則：</span><br>
+                                • 每答對 1 題得 <span class="text-emerald-700 font-black">20分</span>。<br>
+                                • 搶答加碼：第 1 個答對額外 <span class="text-amber-700 font-black">+10分</span>，第 2 個額外 <span class="text-amber-700 font-black">+9分</span>，依此類推。<br>
+                                • 連勝獎勵：連續答對 1 題額外 <span class="text-amber-700 font-black">+1分</span>，2 題額外 <span class="text-amber-700 font-black">+2分</span>，無上限！
+                            </div>
+                            <div>
+                                📌 <span class="font-black text-amber-950">答題時間規則：</span><br>
+                                • 每波當<span class="text-red-600 font-black">第一個答案送出時</span>（無論對錯），開啟 <span class="text-red-600 font-black">3 秒倒數</span>！
                             </div>
                         </div>
                     </div>
 
                     <!-- 遊戲參數設定區塊 -->
-                    <div class="w-full pt-4 flex-shrink-0 bg-amber-50/80 border-2 border-amber-200 rounded-2xl p-4 my-2">
+                    <div class="w-full pt-3 flex-shrink-0 bg-amber-50/80 border-2 border-amber-200 rounded-2xl p-3 my-2">
                         <h3 class="text-amber-900 font-black text-base mb-2 flex items-center gap-2">
                             <i class="fa-solid fa-sliders"></i> 挑戰規則設定
                         </h3>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-3 gap-3">
                             <div class="flex flex-col gap-1">
-                                <label for="select-box-count" class="text-xs text-amber-800 font-black">測驗箱數 (題目數)</label>
-                                <select id="select-box-count" class="bg-white text-amber-900 font-black p-2.5 rounded-xl border-2 border-amber-300 outline-none focus:border-amber-500 cursor-pointer shadow-sm">
+                                <label for="select-box-count" class="text-xs text-amber-800 font-black">測驗箱數</label>
+                                <select id="select-box-count" class="bg-white text-amber-900 font-black p-2 rounded-xl border-2 border-amber-300 outline-none focus:border-amber-500 cursor-pointer shadow-sm text-sm">
                                     <option value="1">1 箱</option>
                                     <option value="3" selected>3 箱</option>
                                     <option value="5">5 箱</option>
                                 </select>
                             </div>
                             <div class="flex flex-col gap-1">
+                                <label for="select-game-mode" class="text-xs text-amber-800 font-black">參賽方式</label>
+                                <select id="select-game-mode" class="bg-white text-amber-900 font-black p-2 rounded-xl border-2 border-amber-300 outline-none focus:border-amber-500 cursor-pointer shadow-sm text-sm">
+                                    <option value="individual" selected>個人賽</option>
+                                    <option value="team">團體賽</option>
+                                </select>
+                            </div>
+                            <div class="flex flex-col gap-1">
                                 <label for="select-ai-count" class="text-xs text-amber-800 font-black">AI參賽人數</label>
-                                <select id="select-ai-count" class="bg-white text-amber-900 font-black p-2.5 rounded-xl border-2 border-amber-300 outline-none focus:border-amber-500 cursor-pointer shadow-sm">
+                                <select id="select-ai-count" class="bg-white text-amber-900 font-black p-2 rounded-xl border-2 border-amber-300 outline-none focus:border-amber-500 cursor-pointer shadow-sm text-sm">
+                                    <option value="0">0 名</option>
                                     <option value="1" selected>1 名</option>
                                     <option value="2">2 名</option>
-                                    <option value="3">3 名</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    <div id="lobby-start-box" class="w-full pt-2 flex-shrink-0">
+                    <div id="lobby-start-box" class="w-full pt-1 flex-shrink-0">
                         <button id="btn-start-game" class="hidden w-full py-3.5 text-2xl font-black text-white bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-500 hover:to-green-600 rounded-2xl shadow-lg active:scale-95 transition-all border-b-4 border-green-700 flex items-center justify-center gap-2">
-                            🚀 開始志工體驗挑戰
+                            🚀 開始遊戲
                         </button>
                     </div>
                 </div>
@@ -169,8 +193,8 @@
             
             <div id="mobile-join-form" class="space-y-4 bg-white p-6 rounded-3xl border-4 border-amber-300 shadow-xl my-auto">
                 <div class="text-center">
-                    <span class="text-5xl">🎁</span>
-                    <h2 class="text-2xl font-black text-amber-900 mt-2">安得烈志工報到</h2>
+                    <span class="text-5xl">📱</span>
+                    <h2 class="text-2xl font-black text-amber-900 mt-2">答題器</h2>
                     <p class="text-xs font-bold text-amber-700">請輸入暱稱準備進行物資打包！</p>
                 </div>
                 <input type="text" id="mobile-name-input" maxlength="8" placeholder="請輸入您的暱稱..." 
@@ -186,7 +210,7 @@
                 <!-- 上方：姓名、題數與波次頂部欄 -->
                 <div class="bg-white p-3 rounded-2xl border-2 border-amber-300 shadow-md flex justify-between items-center flex-shrink-0">
                     <div>
-                        <span class="text-xs text-amber-700 font-bold block">志工姓名</span>
+                        <span class="text-xs text-amber-700 font-bold block">答題器玩家</span>
                         <span id="mobile-user-name" class="text-base font-black text-amber-900">--</span>
                     </div>
                     <div class="text-center">
@@ -232,7 +256,7 @@
             <h1 id="splash-wave-text" class="text-6xl md:text-8xl font-black text-amber-900 drop-shadow-md whitespace-nowrap">
                 第 1 波物資選擇
             </h1>
-            <p class="text-xl text-amber-700 font-bold mt-4 animate-bounce whitespace-nowrap">⏱️ 每波倒數 5 秒！準備好手速！</p>
+            <p class="text-xl text-amber-700 font-bold mt-4 animate-bounce whitespace-nowrap">⏱️ 第一人回答後觸發 3 秒倒數！手速要快！</p>
         </div>
 
         <!-- 大螢幕 - 遊戲主畫面 -->
@@ -245,10 +269,23 @@
                         <span>🏆 志工積分排行榜</span>
                         <span id="game-total-players-badge" class="text-xs bg-amber-100 text-amber-900 px-3 py-1 rounded-full border border-amber-300">0 人</span>
                     </h3>
-                    <div id="players-dashboard" class="flex flex-col space-y-2 overflow-hidden flex-grow"></div>
+
+                    <!-- 團體賽專屬：兩隊分數實時總覽牌 -->
+                    <div id="team-score-board" class="hidden grid-cols-2 gap-2 mb-3 flex-shrink-0">
+                        <div class="bg-red-500/10 border-2 border-red-500/40 rounded-2xl p-2.5 text-center flex flex-col items-center">
+                            <span class="text-xs font-black text-red-700">🚩 紅隊總分</span>
+                            <span id="red-team-score" class="text-2xl font-black text-red-600">0 分</span>
+                        </div>
+                        <div class="bg-slate-500/10 border-2 border-slate-400/40 rounded-2xl p-2.5 text-center flex flex-col items-center">
+                            <span class="text-xs font-black text-slate-700">🏳️ 白隊總分</span>
+                            <span id="white-team-score" class="text-2xl font-black text-slate-600">0 分</span>
+                        </div>
+                    </div>
+
+                    <div id="players-dashboard" class="flex flex-col space-y-2 overflow-y-auto flex-grow"></div>
                 </div>
                 <div class="mt-2 pt-2 border-t border-amber-200 text-center flex-shrink-0">
-                    <span id="round-status-hint" class="text-emerald-700 font-black text-sm">✨ 請在手機端選擇合格物資！</span>
+                    <span id="round-status-hint" class="text-emerald-700 font-black text-sm">✨ 請在答題器選擇合格物資！</span>
                 </div>
             </div>
 
@@ -270,11 +307,11 @@
                                 第 1 箱 - 第 1 / 4 波
                             </span>
                         </div>
-                        <span id="timer-text" class="text-4xl font-black text-orange-600 animate-pulse whitespace-nowrap">⏱ 5s</span>
+                        <span id="timer-text" class="text-3xl font-black text-orange-600 animate-pulse whitespace-nowrap">⏱ 等待搶答...</span>
                     </div>
                 </div>
 
-                <!-- 中央區域：左右兩欄佈局（食物箱在左、文字說明在右） -->
+                <!-- 中央區域：食物箱與任務說明 -->
                 <div class="relative flex-grow flex items-center justify-center w-full my-auto overflow-hidden px-4">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center w-full max-w-5xl my-auto">
                         
@@ -287,13 +324,12 @@
                                 </div>
                             </div>
 
-                            <!-- 「答對+1」跳躍效果顯示區 -->
+                            <!-- 「答對+1」跳躍效果區 -->
                             <div id="correct-badge-container" class="absolute right-0 top-0 translate-x-4 -translate-y-4 flex flex-col items-center justify-center pointer-events-none z-30">
-                                <!-- JS 動態插入跳躍動畫的「答對+1」 -->
                             </div>
                         </div>
 
-                        <!-- 右側：食物箱名稱、年齡層與任務指示區塊 -->
+                        <!-- 右側：食物箱名稱與任務指示區塊 -->
                         <div class="md:col-span-7 flex flex-col items-start justify-center space-y-4 text-left z-20">
                             <div class="bg-white/90 backdrop-blur-md border-3 border-amber-300 rounded-3xl p-6 shadow-lg w-full">
                                 <div class="flex flex-col items-start">
@@ -309,7 +345,7 @@
 
                                 <div class="bg-amber-100/70 p-4 rounded-2xl border border-amber-300/80 w-full">
                                     <p id="box-instruction" class="text-lg md:text-xl font-black text-amber-900 leading-relaxed">
-                                        💡 任務說明：<br>請從手機畫面中點選合格物資放進箱子！
+                                        💡 任務說明：<br>請從答題器畫面中點選合格物資放進箱子！
                                     </p>
                                 </div>
                             </div>
@@ -325,33 +361,36 @@
         <div id="view-result" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-6">
             <div class="w-full max-w-7xl h-full max-h-[90vh] bg-slate-900 border-2 border-neon-yellow rounded-3xl p-6 md:p-8 flex flex-col justify-between shadow-2xl overflow-hidden relative">
                 
-                <h2 class="text-3xl md:text-5xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-neon-yellow via-amber-300 to-yellow-500 mb-2 flex-shrink-0">
+                <h2 id="result-main-title" class="text-3xl md:text-5xl font-black text-center text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-400 to-amber-500 mb-2 flex-shrink-0">
                     🏆 最終頒獎典禮 🏆
                 </h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 flex-grow overflow-hidden my-2">
                     
+                    <!-- 左側成員列表 -->
                     <div class="md:col-span-3 bg-slate-950/60 rounded-2xl p-4 border border-slate-800 flex flex-col justify-between overflow-hidden">
                         <div class="flex justify-between items-center mb-3 border-b border-slate-800 pb-2 flex-shrink-0">
-                            <span class="font-black text-xl md:text-2xl text-amber-300">全場排名 (左)</span>
-                            <span id="result-left-count" class="text-xs bg-slate-800 text-neon-yellow px-2.5 py-1 rounded-full font-bold">0 人</span>
+                            <span id="result-left-title" class="font-black text-xl md:text-2xl text-amber-300">全場排名 (左)</span>
+                            <span id="result-left-count" class="text-xs bg-slate-800 text-yellow-300 px-2.5 py-1 rounded-full font-bold">0 人</span>
                         </div>
-                        <div id="result-left-list" class="space-y-2 overflow-hidden pr-1 flex-grow"></div>
+                        <div id="result-left-list" class="space-y-2 overflow-y-auto pr-1 flex-grow"></div>
                     </div>
 
+                    <!-- 中央頒獎區 (個人賽 TOP 3 / 團體賽 勝利隊伍) -->
                     <div class="md:col-span-6 bg-amber-950/20 border-2 border-amber-500/40 rounded-2xl p-6 flex flex-col items-center justify-center text-center overflow-hidden shadow-inner">
                         <div class="w-full flex flex-col items-center">
-                            <span class="text-amber-400 font-black tracking-widest text-sm mb-3">TOP 3 WINNERS</span>
+                            <span id="award-subtitle" class="text-amber-400 font-black tracking-widest text-sm mb-3">TOP 3 WINNERS</span>
                             <div id="top3-container" class="w-full flex flex-col items-center space-y-4 my-auto"></div>
                         </div>
                     </div>
 
+                    <!-- 右側成員列表 -->
                     <div class="md:col-span-3 bg-slate-950/60 rounded-2xl p-4 border border-slate-800 flex flex-col justify-between overflow-hidden">
                         <div class="flex justify-between items-center mb-3 border-b border-slate-800 pb-2 flex-shrink-0">
-                            <span class="font-black text-xl md:text-2xl text-amber-300">全場排名 (右)</span>
-                            <span id="result-right-count" class="text-xs bg-slate-800 text-neon-yellow px-2.5 py-1 rounded-full font-bold">0 人</span>
+                            <span id="result-right-title" class="font-black text-xl md:text-2xl text-amber-300">全場排名 (右)</span>
+                            <span id="result-right-count" class="text-xs bg-slate-800 text-yellow-300 px-2.5 py-1 rounded-full font-bold">0 人</span>
                         </div>
-                        <div id="result-right-list" class="space-y-2 overflow-hidden pr-1 flex-grow"></div>
+                        <div id="result-right-list" class="space-y-2 overflow-y-auto pr-1 flex-grow"></div>
                     </div>
 
                 </div>
@@ -367,7 +406,7 @@
 
     <script>
         /* ==========================================================================
-           1. 音效控制 (Web Audio API - 心跳急促聲 + 答對歡快跳躍音效 + 瑪莉歐勝利樂章音樂)
+           1. 音效控制 (Web Audio API)
            ========================================================================== */
         let audioCtx = null;
         let currentBgmType = null;
@@ -447,13 +486,11 @@
             }
         }
 
-        // 模擬真實心跳急促聲：雙聲（Lub-Dub），每半秒觸發一組
         function playHeartbeatSound() {
             try {
                 const ctx = getAudioContext();
                 const now = ctx.currentTime;
 
-                // --- 第一聲 Lub (較低沉、響亮) ---
                 const osc1 = ctx.createOscillator();
                 const gain1 = ctx.createGain();
                 osc1.type = 'sine';
@@ -468,7 +505,6 @@
                 osc1.start(now);
                 osc1.stop(now + 0.09);
 
-                // --- 第二聲 Dub (間隔 0.12 秒，音高略高、時間稍短) ---
                 const osc2 = ctx.createOscillator();
                 const gain2 = ctx.createGain();
                 osc2.type = 'sine';
@@ -488,12 +524,10 @@
             }
         }
 
-        // 答對「跳躍音效」(清脆雙音階跳躍效果)
         function playCorrectJumpSound() {
             try {
                 const ctx = getAudioContext();
                 
-                // 第一音：高音 G5
                 const osc1 = ctx.createOscillator();
                 const gain1 = ctx.createGain();
                 osc1.type = 'sine';
@@ -505,7 +539,6 @@
                 osc1.start(ctx.currentTime);
                 osc1.stop(ctx.currentTime + 0.12);
 
-                // 第二音：跳躍至超高音 C6
                 const osc2 = ctx.createOscillator();
                 const gain2 = ctx.createGain();
                 osc2.type = 'sine';
@@ -522,9 +555,8 @@
         }
 
         /* ==========================================================================
-           2. 物資庫與 7 種食物箱資料結構 (帶有年齡層拆分)
+           2. 物資庫資料
            ========================================================================== */
-        
         const FOOD_BOXES = [
             {
                 id: 'baby',
@@ -611,7 +643,7 @@
         }
 
         /* ==========================================================================
-           3. 全局遊戲狀態與變數
+           3. 全局遊戲狀態
            ========================================================================== */
         let peer = null;
         let hostConn = null;
@@ -619,6 +651,7 @@
         let myPlayerId = null;
 
         let totalBoxCount = 3;
+        let gameMode = 'individual'; // 'individual' 或 'team'
         let currentBoxIndex = 0;
         let currentWaveIndex = 0;
         let currentBoxData = null;
@@ -627,13 +660,15 @@
         let timerInterval = null;
         let aiTimeouts = [];
         let isTransitioning = false;
-        let waveTimeLeft = 5;
+        let countdownStarted = false;
+        let waveTimeLeft = 3;
         let lastPlayedHalfSecStep = -1;
 
+        let correctCountThisWave = 0;
         let mobileHasAnswered = false;
 
         /* ==========================================================================
-           4. PeerJS 網路連線邏輯
+           4. PeerJS 網路連線
            ========================================================================== */
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -673,18 +708,7 @@
                         } else if (data.type === 'SUBMIT_WAVE_CHOICE') {
                             const target = players.find(p => p.id === data.playerId);
                             if (target && !target.waveAnswered) {
-                                target.waveAnswered = true;
-                                target.choiceIndex = data.choiceIndex;
-                                target.timeLeft = waveTimeLeft;
-
-                                // 若答對，僅在大螢幕觸發跳躍的「答對+1」動畫與跳躍音效（不顯示答案文字）
-                                const chosenOpt = target.currentWaveOptions[data.choiceIndex];
-                                if (chosenOpt && chosenOpt.isCorrect) {
-                                    triggerJumpCorrectBadge();
-                                }
-
-                                renderPlayersDashboard();
-                                checkAllWaveAnswered();
+                                handlePlayerAnswerSubmit(target, data.choiceIndex);
                             }
                         }
                     });
@@ -697,12 +721,9 @@
             });
         }
 
-        // 觸發「答對+1」跳躍顯示效果與音效
         function triggerJumpCorrectBadge() {
-            // 播放答對跳躍音效
             playCorrectJumpSound();
 
-            // 大螢幕出現跳躍效果的「答對+1」
             const container = document.getElementById('correct-badge-container');
             const badge = document.createElement('div');
             badge.className = 'bg-gradient-to-r from-emerald-400 to-green-500 text-white font-black text-2xl md:text-3xl px-4 py-2 rounded-full shadow-2xl border-2 border-white flex items-center justify-center animate-jump-float whitespace-nowrap drop-shadow-2xl';
@@ -710,7 +731,6 @@
             
             container.appendChild(badge);
 
-            // 動態移除元素
             setTimeout(() => {
                 if (badge.parentNode) {
                     badge.parentNode.removeChild(badge);
@@ -738,38 +758,52 @@
                         document.getElementById('mobile-status-text').innerText = '⏱ 請點選上方物資進行搶答！';
                         renderMobileOptions(data.options);
                     } else if (data.type === 'FINAL_RESULT') {
-                        showMobileFinalResult(data.rank, data.score, data.totalPlayers);
+                        showMobileFinalResult(data.rank, data.score, data.totalPlayers, data.teamInfo);
                     }
                 });
             });
         }
 
-        function showMobileFinalResult(rank, score, totalPlayers) {
+        function showMobileFinalResult(rank, score, totalPlayers, teamInfo) {
             document.getElementById('mobile-game-panel').classList.add('hidden');
 
             const resultBox = document.getElementById('mobile-final-result');
             resultBox.classList.remove('hidden');
             resultBox.classList.add('flex');
 
-            document.getElementById('mobile-result-rank').innerText = `第 ${rank} 名`;
-            document.getElementById('mobile-result-total').innerText = `共 ${totalPlayers} 人`;
-            document.getElementById('mobile-result-score').innerText = score;
-
             const iconEl = document.getElementById('mobile-result-icon');
             const statusEl = document.getElementById('mobile-result-status');
 
-            if (rank === 1) {
-                iconEl.innerText = '🥇';
-                statusEl.innerText = '🎉 恭喜榮獲 愛心包裝王！';
-            } else if (rank === 2) {
-                iconEl.innerText = '🥈';
-                statusEl.innerText = '✨ 恭喜榮獲 亞軍志工！';
-            } else if (rank === 3) {
-                iconEl.innerText = '🥉';
-                statusEl.innerText = '👏 恭喜榮獲 季軍志工！';
+            if (teamInfo) {
+                document.getElementById('mobile-result-rank').innerText = teamInfo.isWinner ? '🎉 獲勝團隊！' : '👏 惜敗團隊';
+                document.getElementById('mobile-result-total').innerText = `${teamInfo.teamName} 總分 ${teamInfo.teamScore} 分`;
+                document.getElementById('mobile-result-score').innerText = score;
+
+                if (teamInfo.isWinner) {
+                    iconEl.innerText = '🏆';
+                    statusEl.innerText = `恭喜您所屬的 ${teamInfo.teamName} 榮獲團體賽冠軍！`;
+                } else {
+                    iconEl.innerText = '🎗️';
+                    statusEl.innerText = `感謝您為 ${teamInfo.teamName} 的付出，表現相當出色！`;
+                }
             } else {
-                iconEl.innerText = '🏅';
-                statusEl.innerText = `感謝您的熱情參與！表現相當出色！`;
+                document.getElementById('mobile-result-rank').innerText = `第 ${rank} 名`;
+                document.getElementById('mobile-result-total').innerText = `共 ${totalPlayers} 人`;
+                document.getElementById('mobile-result-score').innerText = score;
+
+                if (rank === 1) {
+                    iconEl.innerText = '🥇';
+                    statusEl.innerText = '🎉 恭喜榮獲 愛心包裝王！';
+                } else if (rank === 2) {
+                    iconEl.innerText = '🥈';
+                    statusEl.innerText = '✨ 恭喜榮獲 亞軍志工！';
+                } else if (rank === 3) {
+                    iconEl.innerText = '🥉';
+                    statusEl.innerText = '👏 恭喜榮獲 季軍志工！';
+                } else {
+                    iconEl.innerText = '🏅';
+                    statusEl.innerText = `感謝您的熱情參與！表現相當出色！`;
+                }
             }
         }
 
@@ -786,7 +820,6 @@
             }
         });
 
-        // 手機端渲染物資選項按鈕
         function renderMobileOptions(options) {
             const container = document.getElementById('mobile-options-container');
             container.innerHTML = '';
@@ -841,9 +874,10 @@
                 isAI: false,
                 aiType: null,
                 score: 0,
+                streak: 0,
+                team: null,
                 waveAnswered: false,
                 choiceIndex: null,
-                timeLeft: 0,
                 packedItems: [],
                 currentWaveOptions: []
             };
@@ -857,8 +891,21 @@
 
         function renderLobbyPlayers() {
             const container = document.getElementById('player-list-lobby');
+            const rulesBox = document.getElementById('rules-guide-box');
             container.innerHTML = '';
             document.getElementById('player-count-badge').innerText = `${players.length} 人`;
+
+            if (players.length > 0) {
+                if (rulesBox) rulesBox.classList.add('hidden');
+            } else {
+                if (rulesBox) rulesBox.classList.remove('hidden');
+                container.innerHTML = `
+                    <div class="col-span-full text-amber-700/60 text-center py-6 font-bold border-2 border-dashed border-amber-200 rounded-2xl text-lg flex flex-col items-center justify-center gap-2">
+                        <div>☀ 請掃描左側 QR Code 加入志工隊伍...</div>
+                    </div>
+                `;
+                return;
+            }
 
             players.forEach(p => {
                 const item = document.createElement('div');
@@ -880,95 +927,74 @@
             finalizeAndStartGame();
         });
 
+        function createAIPlayer(index, forcedTeam = null) {
+            const names = ['安得烈小羅', '特工阿湯哥', '瑪莉歐', '晶晶阿姨', '閃電葛葛', '小光光'];
+            const pickedName = names[index % names.length] || `AI助手${index+1}`;
+            const acc = getRandomInt(60, 95);
+
+            return {
+                id: 'ai_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                name: `${pickedName}(${acc}%)`,
+                displayName: `${pickedName}(${acc}%)`,
+                conn: null,
+                isAI: true,
+                aiSpec: { accRate: acc / 100 },
+                score: 0,
+                streak: 0,
+                team: forcedTeam,
+                waveAnswered: false,
+                choiceIndex: null,
+                packedItems: [],
+                currentWaveOptions: []
+            };
+        }
+
         function finalizeAndStartGame() {
             totalBoxCount = parseInt(document.getElementById('select-box-count').value, 10);
+            gameMode = document.getElementById('select-game-mode').value;
             const aiToAddCount = parseInt(document.getElementById('select-ai-count').value, 10);
 
-            const totalWaves = totalBoxCount * 4;
-            const andrewProbability = totalWaves * 0.01;
+            for (let i = 0; i < aiToAddCount; i++) {
+                players.push(createAIPlayer(i));
+            }
 
-            if (aiToAddCount > 0) {
-                const availableTypes = ['andrew', 'tom', 'mario', 'random'];
+            if (gameMode === 'team') {
+                const shuffled = shuffleArray([...players]);
+                const half = Math.floor(shuffled.length / 2);
                 
-                for (let i = 0; i < aiToAddCount; i++) {
-                    let aiSpec = {};
-                    let isAndrew = (Math.random() < andrewProbability) && availableTypes.includes('andrew');
-                    
-                    if (isAndrew) {
-                        const acc = getRandomInt(90, 100);
-                        aiSpec = {
-                            baseName: '安得烈小羅',
-                            fullName: `安得烈小羅(${acc}%)`,
-                            type: 'andrew',
-                            minAcc: acc / 100,
-                            maxAcc: acc / 100,
-                            accPercent: acc,
-                            accRate: acc / 100
-                        };
-                        availableTypes.splice(availableTypes.indexOf('andrew'), 1);
+                shuffled.forEach((p, idx) => {
+                    if (idx < half) {
+                        p.team = 'red';
                     } else {
-                        let nonAndrewTypes = availableTypes.filter(t => t !== 'andrew');
-                        if (nonAndrewTypes.length === 0) break;
-
-                        let chosenType = nonAndrewTypes[Math.floor(Math.random() * nonAndrewTypes.length)];
-                        availableTypes.splice(availableTypes.indexOf(chosenType), 1);
-
-                        if (chosenType === 'tom') {
-                            const acc = getRandomInt(50, 80);
-                            aiSpec = {
-                                baseName: '🤖 特工阿湯哥',
-                                fullName: `🤖 特工阿湯哥(${acc}%)`,
-                                type: 'tom',
-                                minAcc: acc / 100,
-                                maxAcc: acc / 100,
-                                accPercent: acc,
-                                accRate: acc / 100
-                            };
-                        } else if (chosenType === 'mario') {
-                            const acc = getRandomInt(40, 70);
-                            aiSpec = {
-                                baseName: '🍄 瑪莉歐',
-                                fullName: `🍄 瑪莉歐(${acc}%)`,
-                                type: 'mario',
-                                minAcc: acc / 100,
-                                maxAcc: acc / 100,
-                                accPercent: acc,
-                                accRate: acc / 100
-                            };
-                        } else {
-                            const randomNames = [
-                                '廖太太', '三寶媽', '閃電葛葛', '晶晶阿姨', 
-                                '小光光', '巧克力阿北', '小白白', '阿青青'
-                            ];
-                            const pickedName = randomNames[Math.floor(Math.random() * randomNames.length)];
-                            const acc = getRandomInt(10, 90);
-                            aiSpec = {
-                                baseName: pickedName,
-                                fullName: `${pickedName}(${acc}%)`,
-                                type: 'random',
-                                minAcc: acc / 100,
-                                maxAcc: acc / 100,
-                                accPercent: acc,
-                                accRate: acc / 100
-                            };
-                        }
+                        p.team = 'white';
                     }
+                });
 
-                    players.push({
-                        id: 'ai_' + Date.now() + '_' + i,
-                        name: aiSpec.fullName,
-                        displayName: aiSpec.fullName,
-                        conn: null,
-                        isAI: true,
-                        aiType: aiSpec.type,
-                        aiSpec: aiSpec,
-                        score: 0,
-                        waveAnswered: false,
-                        choiceIndex: null,
-                        timeLeft: 0,
-                        packedItems: [],
-                        currentWaveOptions: []
-                    });
+                let redCount = players.filter(p => p.team === 'red').length;
+                let whiteCount = players.filter(p => p.team === 'white').length;
+
+                if (redCount !== whiteCount) {
+                    const needTeam = redCount < whiteCount ? 'red' : 'white';
+                    const suppAI = createAIPlayer(99, needTeam);
+                    players.push(suppAI);
+                }
+
+                players.forEach(p => {
+                    const prefix = p.team === 'red' ? '🚩 ' : '🏳️ ';
+                    p.displayName = prefix + p.name;
+                });
+
+                // 顯示團體賽兩隊總分板
+                const teamBoard = document.getElementById('team-score-board');
+                if (teamBoard) {
+                    teamBoard.classList.remove('hidden');
+                    teamBoard.classList.add('grid');
+                }
+            } else {
+                const teamBoard = document.getElementById('team-score-board');
+                if (teamBoard) {
+                    teamBoard.classList.add('hidden');
+                    teamBoard.classList.remove('grid');
                 }
             }
 
@@ -987,9 +1013,8 @@
         }
 
         /* ==========================================================================
-           6. 核心遊戲流程：食物箱與 4 波答題
+           6. 核心遊戲流程
            ========================================================================== */
-        
         function startNewBoxFlow(boxIdx) {
             if (boxIdx >= totalBoxCount) {
                 showFinalResult();
@@ -1002,7 +1027,6 @@
 
             players.forEach(p => p.packedItems = []);
 
-            // 完整顯示文字，若有年齡層則顯示在下一行
             document.getElementById('big-box-title').innerText = currentBoxData.title;
             const ageEl = document.getElementById('big-box-age');
             if (currentBoxData.age) {
@@ -1021,6 +1045,8 @@
         function startWaveFlow(waveIdx) {
             clearAllTimers();
             isTransitioning = true;
+            countdownStarted = false;
+            correctCountThisWave = 0;
 
             document.getElementById('correct-badge-container').innerHTML = '';
 
@@ -1036,7 +1062,8 @@
 
         function loadWaveContent(waveIdx) {
             isTransitioning = false;
-            waveTimeLeft = 5;
+            countdownStarted = false;
+            waveTimeLeft = 3;
             lastPlayedHalfSecStep = -1;
 
             let availableAllowed = currentBoxData.allowed.filter(item => !usedAllowedInCurrentBox.includes(item));
@@ -1062,7 +1089,6 @@
             players.forEach(p => {
                 p.waveAnswered = false;
                 p.choiceIndex = null;
-                p.timeLeft = 0;
                 p.currentWaveOptions = currentWaveOptions;
 
                 if (p.conn) {
@@ -1077,13 +1103,12 @@
             });
 
             document.getElementById('wave-number').innerText = `第 ${currentBoxIndex + 1} 箱 - 第 ${waveIdx + 1} / 4 波`;
-            document.getElementById('timer-text').innerText = `⏱️ ${waveTimeLeft}s`;
+            document.getElementById('timer-text').innerText = `⏱ 等待第一人搶答...`;
             document.getElementById('timer-bar').style.width = '100%';
 
             renderBigBoxPreview();
             renderPlayersDashboard();
 
-            startWaveTimer();
             triggerAIBehaviors();
         }
 
@@ -1098,6 +1123,38 @@
                 tag.innerHTML = `<span>${getItemIcon(item)}</span> <span>${item}</span>`;
                 container.appendChild(tag);
             });
+        }
+
+        function handlePlayerAnswerSubmit(player, choiceIndex) {
+            if (player.waveAnswered) return;
+            player.waveAnswered = true;
+            player.choiceIndex = choiceIndex;
+
+            if (!countdownStarted) {
+                startWaveTimer(3);
+            }
+
+            const chosenOpt = player.currentWaveOptions[choiceIndex];
+            if (chosenOpt && chosenOpt.isCorrect) {
+                correctCountThisWave++;
+
+                let earnedScore = 20;
+                let rankBonus = Math.max(1, 11 - correctCountThisWave);
+                earnedScore += rankBonus;
+
+                player.streak += 1;
+                earnedScore += player.streak;
+
+                player.score += earnedScore;
+                player.packedItems.push(chosenOpt.name);
+
+                triggerJumpCorrectBadge();
+            } else {
+                player.streak = 0;
+            }
+
+            renderPlayersDashboard();
+            checkAllWaveAnswered();
         }
 
         function triggerAIBehaviors() {
@@ -1115,35 +1172,26 @@
                 const delay = Math.random() * 3500 + 500;
                 const tid = setTimeout(() => {
                     if (isTransitioning || ai.waveAnswered) return;
-                    ai.waveAnswered = true;
-                    ai.choiceIndex = chosenIdx;
-                    ai.timeLeft = waveTimeLeft;
-
-                    if (isCorrect) {
-                        triggerJumpCorrectBadge();
-                    }
-
-                    renderPlayersDashboard();
-                    checkAllWaveAnswered();
+                    handlePlayerAnswerSubmit(ai, chosenIdx);
                 }, delay);
 
                 aiTimeouts.push(tid);
             });
         }
 
-        function startWaveTimer() {
+        function startWaveTimer(seconds) {
+            countdownStarted = true;
             const startTime = Date.now();
-            const duration = 5000;
+            const duration = seconds * 1000;
 
             timerInterval = setInterval(() => {
                 const elapsed = Date.now() - startTime;
                 const remaining = Math.max(0, duration - elapsed);
                 waveTimeLeft = Math.ceil(remaining / 1000);
 
-                document.getElementById('timer-text').innerText = `⏱️ ${waveTimeLeft}s`;
+                document.getElementById('timer-text').innerText = `⏱️ 倒數 ${waveTimeLeft} 秒`;
                 document.getElementById('timer-bar').style.width = `${(remaining / duration) * 100}%`;
 
-                // 每 0.5 秒 (500ms) 播放一次急促心跳聲（每半秒 2 聲 Lub-Dub）
                 const currentHalfSecStep = Math.floor(elapsed / 500);
                 if (currentHalfSecStep > lastPlayedHalfSecStep && remaining > 0) {
                     lastPlayedHalfSecStep = currentHalfSecStep;
@@ -1165,20 +1213,15 @@
         }
 
         /* ==========================================================================
-           7. 計分規則與波次推進
+           7. 波次推進與排行榜
            ========================================================================== */
         function evaluateWaveAndProceed() {
             if (isTransitioning) return;
             isTransitioning = true;
 
             players.forEach(p => {
-                if (p.choiceIndex !== null && p.choiceIndex !== undefined) {
-                    const chosenOpt = p.currentWaveOptions[p.choiceIndex];
-                    if (chosenOpt && chosenOpt.isCorrect) {
-                        let waveScore = 5 + (p.timeLeft || 0);
-                        p.score += waveScore;
-                        p.packedItems.push(chosenOpt.name);
-                    }
+                if (!p.waveAnswered) {
+                    p.streak = 0;
                 }
             });
 
@@ -1196,11 +1239,21 @@
             }, 1000);
         }
 
-        // 排行榜渲染
         function renderPlayersDashboard() {
             const dashboard = document.getElementById('players-dashboard');
             dashboard.innerHTML = '';
             document.getElementById('game-total-players-badge').innerText = `${players.length} 人`;
+
+            // 計算兩隊總得分
+            if (gameMode === 'team') {
+                const redTotal = players.filter(p => p.team === 'red').reduce((sum, p) => sum + p.score, 0);
+                const whiteTotal = players.filter(p => p.team === 'white').reduce((sum, p) => sum + p.score, 0);
+
+                const redEl = document.getElementById('red-team-score');
+                const whiteEl = document.getElementById('white-team-score');
+                if (redEl) redEl.innerText = `${redTotal} 分`;
+                if (whiteEl) whiteEl.innerText = `${whiteTotal} 分`;
+            }
 
             const sorted = [...players].sort((a, b) => b.score - a.score);
 
@@ -1219,6 +1272,7 @@
                         <span class="font-black text-amber-900 text-base truncate whitespace-nowrap">${p.displayName || p.name}</span>
                     </div>
                     <div class="flex items-center gap-2 flex-shrink-0">
+                        ${p.streak > 1 ? `<span class="text-xs bg-orange-500 text-white font-black px-1.5 py-0.5 rounded-full">${p.streak}連勝</span>` : ''}
                         <span class="text-orange-600 font-black text-lg whitespace-nowrap">${p.score} 分</span>
                     </div>
                 `;
@@ -1227,7 +1281,7 @@
         }
 
         /* ==========================================================================
-           8. 最終結算與頒獎
+           8. 最終結算與頒獎（個人賽 / 團體賽）
            ========================================================================== */
         function showFinalResult() {
             document.getElementById('view-game').classList.add('hidden');
@@ -1237,87 +1291,178 @@
 
             const allSorted = [...players].sort((a, b) => b.score - a.score);
 
-            players.forEach(p => {
-                if (p.conn) {
-                    const rank = allSorted.findIndex(s => s.id === p.id) + 1;
-                    p.conn.send({
-                        type: 'FINAL_RESULT',
-                        rank: rank,
-                        score: p.score,
-                        totalPlayers: allSorted.length
-                    });
-                }
-            });
+            if (gameMode === 'team') {
+                // --- 團體賽頒獎邏輯 ---
+                const redPlayers = players.filter(p => p.team === 'red').sort((a,b) => b.score - a.score);
+                const whitePlayers = players.filter(p => p.team === 'white').sort((a,b) => b.score - a.score);
 
-            const midIndex = Math.ceil(allSorted.length / 2);
-            const leftPlayers = allSorted.slice(0, midIndex);
-            const rightPlayers = allSorted.slice(midIndex);
+                const redTotal = redPlayers.reduce((sum, p) => sum + p.score, 0);
+                const whiteTotal = whitePlayers.reduce((sum, p) => sum + p.score, 0);
 
-            document.getElementById('result-left-count').innerText = `${leftPlayers.length} 人`;
-            const leftContainer = document.getElementById('result-left-list');
-            leftContainer.innerHTML = '';
+                const isRedWinner = redTotal >= whiteTotal;
+                const winnerTeamName = isRedWinner ? '🚩 紅隊' : '🏳️ 白隊';
+                const winnerScore = isRedWinner ? redTotal : whiteTotal;
+                const winnerMvp = isRedWinner ? (redPlayers[0]?.displayName || '--') : (whitePlayers[0]?.displayName || '--');
 
-            leftPlayers.forEach((p, idx) => {
-                const realRank = idx + 1;
-                const item = document.createElement('div');
-                item.className = 'flex justify-between items-center p-2.5 bg-slate-800/80 rounded-xl border border-slate-700/80 text-sm';
-                item.innerHTML = `
-                    <span class="font-bold text-slate-200 whitespace-nowrap overflow-hidden text-ellipsis max-w-[140px]">#${realRank} ${p.displayName || p.name}</span>
-                    <span class="font-black text-neon-yellow whitespace-nowrap">${p.score} 分</span>
-                `;
-                leftContainer.appendChild(item);
-            });
+                // 發送手機端團體結算訊息
+                players.forEach(p => {
+                    if (p.conn) {
+                        const isMyTeamWinner = isRedWinner ? (p.team === 'red') : (p.team === 'white');
+                        const myTeamScore = p.team === 'red' ? redTotal : whiteTotal;
+                        const myTeamName = p.team === 'red' ? '🚩 紅隊' : '🏳️ 白隊';
 
-            document.getElementById('result-right-count').innerText = `${rightPlayers.length} 人`;
-            const rightContainer = document.getElementById('result-right-list');
-            rightContainer.innerHTML = '';
+                        p.conn.send({
+                            type: 'FINAL_RESULT',
+                            rank: null,
+                            score: p.score,
+                            totalPlayers: players.length,
+                            teamInfo: {
+                                isWinner: isMyTeamWinner,
+                                teamName: myTeamName,
+                                teamScore: myTeamScore
+                            }
+                        });
+                    }
+                });
 
-            rightPlayers.forEach((p, idx) => {
-                const realRank = midIndex + idx + 1;
-                const item = document.createElement('div');
-                item.className = 'flex justify-between items-center p-2.5 bg-slate-800/80 rounded-xl border border-slate-700/80 text-sm';
-                item.innerHTML = `
-                    <span class="font-bold text-slate-200 whitespace-nowrap overflow-hidden text-ellipsis max-w-[140px]">#${realRank} ${p.displayName || p.name}</span>
-                    <span class="font-black text-neon-yellow whitespace-nowrap">${p.score} 分</span>
-                `;
-                rightContainer.appendChild(item);
-            });
+                // 主標題與副標題
+                document.getElementById('result-main-title').innerText = '🏆 團體對抗賽頒獎典禮 🏆';
+                document.getElementById('award-subtitle').innerText = 'VICTORIOUS TEAM';
 
-            const top3Container = document.getElementById('top3-container');
-            top3Container.innerHTML = '';
+                // 左欄顯示紅隊，右欄顯示白隊
+                document.getElementById('result-left-title').innerText = '🚩 紅隊成員';
+                document.getElementById('result-left-count').innerText = `總分 ${redTotal} 分`;
+                const leftContainer = document.getElementById('result-left-list');
+                leftContainer.innerHTML = '';
 
-            const top3 = allSorted.slice(0, 3);
-            const medals = ['🥇 榮譽冠軍志工', '🥈 亞軍志工', '🥉 季軍志工'];
-
-            top3.forEach((p, idx) => {
-                const card = document.createElement('div');
-                if (idx === 0) {
-                    card.className = 'w-full max-w-md p-5 rounded-3xl border-4 border-amber-400 bg-slate-950/90 shadow-[0_0_50px_rgba(251,191,36,0.3)] flex flex-col items-center justify-center';
-                    card.innerHTML = `
-                        <span class="text-sm font-black text-slate-950 bg-gradient-to-r from-amber-300 to-yellow-500 px-4 py-1 rounded-full mb-1 whitespace-nowrap shadow">👑 冠軍愛心包裝王 👑</span>
-                        <div class="text-5xl my-1 animate-bounce">🥇</div>
-                        <div class="text-2xl font-black text-white whitespace-nowrap overflow-hidden text-ellipsis max-w-full">${p.displayName || p.name}</div>
-                        <div class="text-2xl font-black text-neon-green mt-1 whitespace-nowrap">${p.score} 分</div>
+                redPlayers.forEach((p, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center p-2.5 bg-red-950/40 rounded-xl border border-red-500/40 text-sm';
+                    item.innerHTML = `
+                        <span class="font-bold text-slate-200 whitespace-nowrap overflow-hidden text-ellipsis max-w-[140px]">${p.displayName}</span>
+                        <span class="font-black text-red-400 whitespace-nowrap">${p.score} 分</span>
                     `;
-                } else {
-                    card.className = 'w-full max-w-md p-3.5 rounded-2xl border-2 border-amber-500/50 bg-slate-950/80 shadow-lg flex justify-between items-center px-6';
-                    card.innerHTML = `
-                        <div class="flex items-center gap-3 truncate">
-                            <span class="text-3xl flex-shrink-0">${idx === 1 ? '🥈' : '🥉'}</span>
-                            <div class="text-left truncate">
-                                <span class="text-xs font-bold text-amber-400 whitespace-nowrap">${medals[idx]}</span>
-                                <div class="text-xl font-black text-white truncate whitespace-nowrap">${p.displayName || p.name}</div>
+                    leftContainer.appendChild(item);
+                });
+
+                document.getElementById('result-right-title').innerText = '🏳️ 白隊成員';
+                document.getElementById('result-right-count').innerText = `總分 ${whiteTotal} 分`;
+                const rightContainer = document.getElementById('result-right-list');
+                rightContainer.innerHTML = '';
+
+                whitePlayers.forEach((p, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center p-2.5 bg-slate-800/80 rounded-xl border border-slate-600/80 text-sm';
+                    item.innerHTML = `
+                        <span class="font-bold text-slate-200 whitespace-nowrap overflow-hidden text-ellipsis max-w-[140px]">${p.displayName}</span>
+                        <span class="font-black text-slate-300 whitespace-nowrap">${p.score} 分</span>
+                    `;
+                    rightContainer.appendChild(item);
+                });
+
+                // 中央頒發獲勝隊伍獎盃卡片
+                const top3Container = document.getElementById('top3-container');
+                top3Container.innerHTML = `
+                    <div class="w-full max-w-md p-6 rounded-3xl border-4 ${isRedWinner ? 'border-red-500 bg-red-950/80 shadow-[0_0_50px_rgba(239,68,68,0.4)]' : 'border-slate-300 bg-slate-900/90 shadow-[0_0_50px_rgba(241,245,249,0.3)]'} flex flex-col items-center justify-center text-center">
+                        <span class="text-sm font-black text-slate-950 bg-gradient-to-r from-amber-300 to-yellow-500 px-4 py-1 rounded-full mb-2 whitespace-nowrap shadow">🎉 冠軍勝利團隊 🎉</span>
+                        <div class="text-6xl my-2 animate-bounce">${isRedWinner ? '🚩' : '🏳️'}</div>
+                        <div class="text-4xl font-black text-white whitespace-nowrap my-1">${winnerTeamName}</div>
+                        <div class="text-3xl font-black text-yellow-400 my-2">總得分：${winnerScore} 分</div>
+                        <hr class="border-amber-500/30 my-3 w-full">
+                        <div class="text-base font-bold text-amber-200">⭐ 隊內最高分 MVP ⭐</div>
+                        <div class="text-xl font-black text-emerald-400 mt-0.5">${winnerMvp}</div>
+                    </div>
+                `;
+
+            } else {
+                // --- 個人賽頒獎邏輯 ---
+                players.forEach(p => {
+                    if (p.conn) {
+                        const rank = allSorted.findIndex(s => s.id === p.id) + 1;
+                        p.conn.send({
+                            type: 'FINAL_RESULT',
+                            rank: rank,
+                            score: p.score,
+                            totalPlayers: allSorted.length
+                        });
+                    }
+                });
+
+                document.getElementById('result-main-title').innerText = '🏆 個人賽頒獎典禮 🏆';
+                document.getElementById('award-subtitle').innerText = 'TOP 3 WINNERS';
+
+                const midIndex = Math.ceil(allSorted.length / 2);
+                const leftPlayers = allSorted.slice(0, midIndex);
+                const rightPlayers = allSorted.slice(midIndex);
+
+                document.getElementById('result-left-title').innerText = '全場排名 (左)';
+                document.getElementById('result-left-count').innerText = `${leftPlayers.length} 人`;
+                const leftContainer = document.getElementById('result-left-list');
+                leftContainer.innerHTML = '';
+
+                leftPlayers.forEach((p, idx) => {
+                    const realRank = idx + 1;
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center p-2.5 bg-slate-800/80 rounded-xl border border-slate-700/80 text-sm';
+                    item.innerHTML = `
+                        <span class="font-bold text-slate-200 whitespace-nowrap overflow-hidden text-ellipsis max-w-[140px]">#${realRank} ${p.displayName || p.name}</span>
+                        <span class="font-black text-yellow-300 whitespace-nowrap">${p.score} 分</span>
+                    `;
+                    leftContainer.appendChild(item);
+                });
+
+                document.getElementById('result-right-title').innerText = '全場排名 (右)';
+                document.getElementById('result-right-count').innerText = `${rightPlayers.length} 人`;
+                const rightContainer = document.getElementById('result-right-list');
+                rightContainer.innerHTML = '';
+
+                rightPlayers.forEach((p, idx) => {
+                    const realRank = midIndex + idx + 1;
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center p-2.5 bg-slate-800/80 rounded-xl border border-slate-700/80 text-sm';
+                    item.innerHTML = `
+                        <span class="font-bold text-slate-200 whitespace-nowrap overflow-hidden text-ellipsis max-w-[140px]">#${realRank} ${p.displayName || p.name}</span>
+                        <span class="font-black text-yellow-300 whitespace-nowrap">${p.score} 分</span>
+                    `;
+                    rightContainer.appendChild(item);
+                });
+
+                const top3Container = document.getElementById('top3-container');
+                top3Container.innerHTML = '';
+
+                const top3 = allSorted.slice(0, 3);
+                const medals = ['🥇 榮譽冠軍志工', '🥈 亞軍志工', '🥉 季軍志工'];
+
+                top3.forEach((p, idx) => {
+                    const card = document.createElement('div');
+                    if (idx === 0) {
+                        card.className = 'w-full max-w-md p-5 rounded-3xl border-4 border-amber-400 bg-slate-950/90 shadow-[0_0_50px_rgba(251,191,36,0.3)] flex flex-col items-center justify-center';
+                        card.innerHTML = `
+                            <span class="text-sm font-black text-slate-950 bg-gradient-to-r from-amber-300 to-yellow-500 px-4 py-1 rounded-full mb-1 whitespace-nowrap shadow">👑 冠軍愛心包裝王 👑</span>
+                            <div class="text-5xl my-1 animate-bounce">🥇</div>
+                            <div class="text-2xl font-black text-white whitespace-nowrap overflow-hidden text-ellipsis max-w-full">${p.displayName || p.name}</div>
+                            <div class="text-2xl font-black text-emerald-400 mt-1 whitespace-nowrap">${p.score} 分</div>
+                        `;
+                    } else {
+                        card.className = 'w-full max-w-md p-3.5 rounded-2xl border-2 border-amber-500/50 bg-slate-950/80 shadow-lg flex justify-between items-center px-6';
+                        card.innerHTML = `
+                            <div class="flex items-center gap-3 truncate">
+                                <span class="text-3xl flex-shrink-0">${idx === 1 ? '🥈' : '🥉'}</span>
+                                <div class="text-left truncate">
+                                    <span class="text-xs font-bold text-amber-400 whitespace-nowrap">${medals[idx]}</span>
+                                    <div class="text-xl font-black text-white truncate whitespace-nowrap">${p.displayName || p.name}</div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="text-xl font-black text-neon-green flex-shrink-0 whitespace-nowrap">${p.score} 分</div>
-                    `;
-                }
-                top3Container.appendChild(card);
-            });
+                            <div class="text-xl font-black text-emerald-400 flex-shrink-0 whitespace-nowrap">${p.score} 分</div>
+                        `;
+                    }
+                    top3Container.appendChild(card);
+                });
+            }
 
             confetti({
-                particleCount: 100,
-                spread: 70,
+                particleCount: 120,
+                spread: 80,
                 origin: { y: 0.6 }
             });
         }
