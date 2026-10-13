@@ -651,7 +651,7 @@
         let myPlayerId = null;
 
         let totalBoxCount = 3;
-        let gameMode = 'individual'; // 'individual' 或 'team'
+        let gameMode = 'individual';
         let currentBoxIndex = 0;
         let currentWaveIndex = 0;
         let currentBoxData = null;
@@ -861,8 +861,17 @@
         }
 
         /* ==========================================================================
-           5. 大廳與玩家管理
+           5. 大廳與玩家管理 (AI 角色設定)
            ========================================================================== */
+        
+        // 內定 4 位 AI 角色規格設定
+        const AI_ROSTER_CONFIG = [
+            { name: '小羅羅', minAcc: 90, maxAcc: 100 },
+            { name: '安得鹿', minAcc: 0,  maxAcc: 60 },
+            { name: '大黑怪', minAcc: 0,  maxAcc: 90 },
+            { name: '寶石公主', minAcc: 60, maxAcc: 90 }
+        ];
+
         function addPlayer(name, conn, playerId) {
             if (players.some(p => p.id === playerId)) return;
 
@@ -927,26 +936,42 @@
             finalizeAndStartGame();
         });
 
-        function createAIPlayer(index, forcedTeam = null) {
-            const names = ['安得烈小羅', '特工阿湯哥', '瑪莉歐', '晶晶阿姨', '閃電葛葛', '小光光'];
-            const pickedName = names[index % names.length] || `AI助手${index+1}`;
-            const acc = getRandomInt(60, 95);
+        // 依指定規則生成 AI 參賽者
+        function generateAIPlayers(count, availableRoster) {
+            const selected = [];
+            for (let i = 0; i < count; i++) {
+                if (availableRoster.length === 0) break;
 
-            return {
-                id: 'ai_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
-                name: `${pickedName}(${acc}%)`,
-                displayName: `${pickedName}(${acc}%)`,
-                conn: null,
-                isAI: true,
-                aiSpec: { accRate: acc / 100 },
-                score: 0,
-                streak: 0,
-                team: forcedTeam,
-                waveAnswered: false,
-                choiceIndex: null,
-                packedItems: [],
-                currentWaveOptions: []
-            };
+                // 25% 均勻機率洗牌抽取（不重複）
+                const randomIndex = Math.floor(Math.random() * availableRoster.length);
+                const charSpec = availableRoster.splice(randomIndex, 1)[0];
+
+                // 隨機計算強度區間
+                const accPercent = getRandomInt(charSpec.minAcc, charSpec.maxAcc);
+                const accRate = accPercent / 100;
+                const formattedName = `${charSpec.name}(${accPercent}%)`;
+
+                selected.push({
+                    id: 'ai_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                    name: formattedName,
+                    displayName: formattedName,
+                    conn: null,
+                    isAI: true,
+                    aiSpec: {
+                        baseName: charSpec.name,
+                        accPercent: accPercent,
+                        accRate: accRate
+                    },
+                    score: 0,
+                    streak: 0,
+                    team: null,
+                    waveAnswered: false,
+                    choiceIndex: null,
+                    packedItems: [],
+                    currentWaveOptions: []
+                });
+            }
+            return selected;
         }
 
         function finalizeAndStartGame() {
@@ -954,10 +979,16 @@
             gameMode = document.getElementById('select-game-mode').value;
             const aiToAddCount = parseInt(document.getElementById('select-ai-count').value, 10);
 
-            for (let i = 0; i < aiToAddCount; i++) {
-                players.push(createAIPlayer(i));
+            // 複製一份可用的 AI 角色池，確保名稱絕不重複
+            let availableAiPool = [...AI_ROSTER_CONFIG];
+
+            // 1. 新增 AI 參賽者
+            if (aiToAddCount > 0) {
+                const aiList = generateAIPlayers(aiToAddCount, availableAiPool);
+                players.push(...aiList);
             }
 
+            // 2. 團體賽隨機分隊 (紅隊與白隊)
             if (gameMode === 'team') {
                 const shuffled = shuffleArray([...players]);
                 const half = Math.floor(shuffled.length / 2);
@@ -973,10 +1004,15 @@
                 let redCount = players.filter(p => p.team === 'red').length;
                 let whiteCount = players.filter(p => p.team === 'white').length;
 
+                // 若兩隊人數不相等，自動補充 1 名 AI 給少人的那隊
                 if (redCount !== whiteCount) {
                     const needTeam = redCount < whiteCount ? 'red' : 'white';
-                    const suppAI = createAIPlayer(99, needTeam);
-                    players.push(suppAI);
+                    const suppAIList = generateAIPlayers(1, availableAiPool);
+                    if (suppAIList.length > 0) {
+                        const suppAI = suppAIList[0];
+                        suppAI.team = needTeam;
+                        players.push(suppAI);
+                    }
                 }
 
                 players.forEach(p => {
@@ -984,7 +1020,6 @@
                     p.displayName = prefix + p.name;
                 });
 
-                // 顯示團體賽兩隊總分板
                 const teamBoard = document.getElementById('team-score-board');
                 if (teamBoard) {
                     teamBoard.classList.remove('hidden');
@@ -1169,7 +1204,12 @@
                     chosenIdx = wrongIndices[Math.floor(Math.random() * wrongIndices.length)];
                 }
 
-                const delay = Math.random() * 3500 + 500;
+                // AI 強度 (答題準確率 * 答題速度)：強度越高，回應延遲越短
+                // 高強度 (如 100%) 反應 0.4s~1.2s；低強度 (如 0%) 反應 1.8s~3.8s
+                const minDelay = 400 + (1 - accRate) * 1400;
+                const maxDelay = 1200 + (1 - accRate) * 2600;
+                const delay = Math.random() * (maxDelay - minDelay) + minDelay;
+
                 const tid = setTimeout(() => {
                     if (isTransitioning || ai.waveAnswered) return;
                     handlePlayerAnswerSubmit(ai, chosenIdx);
@@ -1244,7 +1284,6 @@
             dashboard.innerHTML = '';
             document.getElementById('game-total-players-badge').innerText = `${players.length} 人`;
 
-            // 計算兩隊總得分
             if (gameMode === 'team') {
                 const redTotal = players.filter(p => p.team === 'red').reduce((sum, p) => sum + p.score, 0);
                 const whiteTotal = players.filter(p => p.team === 'white').reduce((sum, p) => sum + p.score, 0);
@@ -1281,7 +1320,7 @@
         }
 
         /* ==========================================================================
-           8. 最終結算與頒獎（個人賽 / 團體賽）
+           8. 最終結算與頒獎
            ========================================================================== */
         function showFinalResult() {
             document.getElementById('view-game').classList.add('hidden');
@@ -1292,7 +1331,6 @@
             const allSorted = [...players].sort((a, b) => b.score - a.score);
 
             if (gameMode === 'team') {
-                // --- 團體賽頒獎邏輯 ---
                 const redPlayers = players.filter(p => p.team === 'red').sort((a,b) => b.score - a.score);
                 const whitePlayers = players.filter(p => p.team === 'white').sort((a,b) => b.score - a.score);
 
@@ -1304,7 +1342,6 @@
                 const winnerScore = isRedWinner ? redTotal : whiteTotal;
                 const winnerMvp = isRedWinner ? (redPlayers[0]?.displayName || '--') : (whitePlayers[0]?.displayName || '--');
 
-                // 發送手機端團體結算訊息
                 players.forEach(p => {
                     if (p.conn) {
                         const isMyTeamWinner = isRedWinner ? (p.team === 'red') : (p.team === 'white');
@@ -1325,11 +1362,9 @@
                     }
                 });
 
-                // 主標題與副標題
                 document.getElementById('result-main-title').innerText = '🏆 團體對抗賽頒獎典禮 🏆';
                 document.getElementById('award-subtitle').innerText = 'VICTORIOUS TEAM';
 
-                // 左欄顯示紅隊，右欄顯示白隊
                 document.getElementById('result-left-title').innerText = '🚩 紅隊成員';
                 document.getElementById('result-left-count').innerText = `總分 ${redTotal} 分`;
                 const leftContainer = document.getElementById('result-left-list');
@@ -1360,7 +1395,6 @@
                     rightContainer.appendChild(item);
                 });
 
-                // 中央頒發獲勝隊伍獎盃卡片
                 const top3Container = document.getElementById('top3-container');
                 top3Container.innerHTML = `
                     <div class="w-full max-w-md p-6 rounded-3xl border-4 ${isRedWinner ? 'border-red-500 bg-red-950/80 shadow-[0_0_50px_rgba(239,68,68,0.4)]' : 'border-slate-300 bg-slate-900/90 shadow-[0_0_50px_rgba(241,245,249,0.3)]'} flex flex-col items-center justify-center text-center">
@@ -1375,7 +1409,6 @@
                 `;
 
             } else {
-                // --- 個人賽頒獎邏輯 ---
                 players.forEach(p => {
                     if (p.conn) {
                         const rank = allSorted.findIndex(s => s.id === p.id) + 1;
